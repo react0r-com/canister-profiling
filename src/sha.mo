@@ -6,11 +6,12 @@ import Blob "mo:base/Blob";
 import Debug "mo:base/Debug";
 import Table "utils/table";
 import Sha2 "mo:motoko-sha2";
-import Crypto "mo:crypto.mo/SHA/SHA256";
+import CryptoMo_SHA256 "mo:crypto.mo/SHA/SHA256";
+import CryptoMo_SHA3_256 "mo:crypto.mo/SHA/SHA3_256";
+import Hanbu_SHA3 "mo:motoko-sha3";
 import Nat "mo:base/Nat";
 import Nat64 "mo:base/Nat64";
 import Nat8 "mo:base/Nat8";
-import Iter "mo:base/Iter";
 
 module {
   type RNG = { next : () -> ?Nat8; reset : () -> () };
@@ -49,13 +50,19 @@ module {
     Blob.fromArray(arr);
   };
 
+  func Hanbu_SHA3_256_sum(val : [Nat8]) : [Nat8] {
+    let sha3 = Hanbu_SHA3.Sha3(256);
+    sha3.update(val);
+    return sha3.finalize();
+  };
+
   public func profile() {
 
     let lengths = [0, 1, 10, 100, 1000];
     let inputs_64 = Array.map<Nat, Blob>(lengths, ff_blocks_64);
     let inputs_128 = Array.map<Nat, Blob>(lengths, ff_blocks_128);
 
-    let t = Table.Table(0, 4);
+    let t = Table.Table(0, 6);
     var i = 0;
     while (i < lengths.size()) {
       t.stat_average_n(
@@ -65,20 +72,25 @@ module {
           ?(func() = func() = ignore Sha256.fromBlob(#sha256, inputs_64[i])),
           ?(func() = func() = ignore Sha512.fromBlob(#sha512, inputs_128[i])),
           ?(func() = func() = ignore Sha2.fromBlob(#sha256, inputs_64[i])),
-          ?(func() = func() = ignore Crypto.sum(Blob.toArray(inputs_64[i]))),
+          ?(func() = func() = ignore CryptoMo_SHA256.sum(Blob.toArray(inputs_64[i]))),
+          ?(func() = func() = ignore CryptoMo_SHA3_256.sum(Blob.toArray(inputs_64[i]))),
+          ?(func() = func() = ignore Hanbu_SHA3_256_sum(Blob.toArray(inputs_64[i]))),
         ],
       );
       i += 1;
     };
 
-    Debug.print(t.output(["Sha256", "Sha512", "timohanke", "aviate-labs"]));
+    Debug.print(t.output(["Sha256",
+                          "Sha512",
+                          "Sha256-timohanke",
+                          "Sha256-aviate-labs",
+                          "Sha3_256-crypto-mo",
+                          "Sha3_256-hanbu",
+                         ]));
   };
 
-  public func sha256_heap() : () -> Any {
+  public func sha256_heap() : Any {
     let len : Nat = 64 * 1000 - 7;
-    let iter = Iter.toArray(random_iter(len));
-    func() {
-      Sha256.fromArray(#sha256, iter);
-    };
+    Sha256.fromIter(#sha256, random_iter(len));
   };
 };

@@ -41,11 +41,19 @@
     dependencies = [ "base" ]
   },
   { name = "crypto.mo",
-    repo = "https://github.com/skilesare/crypto.mo",
+    repo = "https://github.com/react0r-com/crypto.mo",
     version = "main",
+    -- repo = "https://github.com/skilesare/crypto.mo",
+    -- version = "main",
     -- repo = "https://github.com/aviate-labs/crypto.mo.git",
     -- version = "v0.3.1",
     dependencies = [ "base", "encoding", "base-0.7.3" ]
+  },
+  {
+    name = "motoko-sha3",
+    repo = "https://github.com/hanbu97/motoko-sha3.git",
+    version = "master",
+    dependencies = [ "base" ]
   },
   { name = "encoding"
   , repo = "https://github.com/aviate-labs/encoding.mo"

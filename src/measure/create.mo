@@ -1,5 +1,5 @@
 import Enumeration "../enumeration";
-import Sha2 "../sha2";
+import Sha "../sha";
 import Prng "../prng";
 import Vector "../vector";
 import Prim "mo:⛔";
@@ -12,7 +12,7 @@ module {
       case "buffer" return Vector.buffer_heap;
       case "enumeration" return Enumeration.create_heap;
       case "rb_tree" return Enumeration.rb_tree_heap;
-      case "sha256" return Sha2.sha256_heap;
+      case "sha256" return Sha.sha256_heap;
       case _ Prim.trap("");
     };
   };
@@ -21,7 +21,7 @@ module {
     switch (name) {
       case "vector" return Vector.profile;
       case "enumeration" return Enumeration.profile;
-      case "sha2" return Sha2.profile;
+      case "sha" return Sha.profile;
       case "prng" return Prng.profile;
       case _ Prim.trap("");
     };
