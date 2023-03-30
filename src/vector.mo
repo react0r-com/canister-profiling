@@ -1064,6 +1064,23 @@ module {
     );
 
     t.stat_average(
+      "iterateItems",
+      [
+        ?(
+          func() {
+            let a = Vector.init<Nat>(n, 0);
+            func() {
+              ignore Vector.iterateItems<Nat>(a, func(i,x) { ignore x; });
+            };
+          }
+        ),
+        null,
+        null,
+        null,
+      ],
+    );
+
+    t.stat_average(
       "contains",
       [
         ?(
